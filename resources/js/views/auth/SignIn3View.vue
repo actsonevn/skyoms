@@ -59,6 +59,7 @@ async function onSubmit() {
     if(status === 200) {
       // set token to session storage
       sessionStorage.setItem("access_token", access_token);
+      sessionStorage.setItem("time_expried", new Date().getTime() + (24 * 60 * 60)); // 24 * 60 * 60 <=> 1 hours is time expried for token
       toast("Login Success", {
         type: 'success'
       })

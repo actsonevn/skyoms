@@ -1,9 +1,15 @@
 <script setup>
-import { reactive, ref } from "vue";
+
+import { onMounted, reactive, ref } from "vue";
 
 // vue-chartjs, for more info and examples you can check out https://vue-chartjs.org/ and http://www.chartjs.org/docs/ -->
 import { Line, Bar } from "vue-chartjs";
 import { Chart, registerables } from "chart.js";
+import dashboardApi from "../../apis/dashboard.api";
+import { useDashboardStore } from '../../stores/dashboard';
+
+const dashboard = useDashboardStore();
+const { overiewLoading, overview } = dashboard;
 
 Chart.register(...registerables);
 
@@ -18,6 +24,18 @@ Chart.defaults.elements.point.radius = 0;
 Chart.defaults.elements.point.hoverRadius = 0;
 Chart.defaults.plugins.tooltip.radius = 3;
 Chart.defaults.plugins.legend.labels.boxWidth = 10;
+
+onMounted(async () => {
+  dashboard.setOverviewLoading(true);
+
+  const result = await dashboardApi.getOverview();
+  
+  dashboard.setOverview(result.data);
+  dashboard.setOverviewLoading(false);
+})
+
+
+
 
 // Helper variables
 const orderSearch = ref(false);
@@ -282,6 +300,7 @@ const newCustomersOptions = reactive({
 </script>
 
 <template>
+  
   <!-- Hero -->
   <div class="content">
     <div
@@ -366,9 +385,9 @@ const newCustomersOptions = reactive({
               class="block-content block-content-full flex-grow-1 d-flex justify-content-between align-items-center"
             >
               <dl class="mb-0">
-                <dt class="fs-3 fw-bold">32</dt>
+                <dt class="fs-3 fw-bold">{{ overview.totalOrder }}</dt>
                 <dd class="fs-sm fw-medium fs-sm fw-medium text-muted mb-0">
-                  Pending Orders
+                  Total Order
                 </dd>
               </dl>
               <div class="item item-rounded-lg bg-body-light">

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\DashboardController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -19,10 +20,14 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+// Auth Controller
 Route::post('/auth/login', [AuthController::class, 'login']);
 Route::post('/auth/sign-up', [AuthController::class, 'signUp']);
 
 Route::middleware('auth:sanctum')->get('/user/detail/{id}', [AuthController::class, 'detailUser']);
 // Route::get('/user/detail/{id}', [AuthController::class, 'detailUser']);
+
+// Dashboard Controller
+Route::get('/overview', [DashboardController::class, 'getOverviewDashboard']);
 
 
