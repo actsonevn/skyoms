@@ -4,6 +4,7 @@ import Vue3Toastify from 'vue3-toastify';
 import 'vue3-toastify/dist/index.css';
 import App from "./App.vue";
 
+import VueHighcharts from 'vue3-highcharts';
 // You can use the following starter router instead of the default one as a clean starting point
 // import router from "./router/starter";
 import router from "./router";
@@ -35,6 +36,8 @@ app.use(Vue3Toastify, {
     autoClose: 3000,
     theme: "colored",
 });
+
+app.use(VueHighcharts);
 
 // Use Pinia and Vue Router
 app.use(createPinia());

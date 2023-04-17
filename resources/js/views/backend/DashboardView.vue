@@ -1,41 +1,32 @@
 <script setup>
-
 import { onMounted, reactive, ref } from "vue";
-
 // vue-chartjs, for more info and examples you can check out https://vue-chartjs.org/ and http://www.chartjs.org/docs/ -->
-import { Line, Bar } from "vue-chartjs";
-import { Chart, registerables } from "chart.js";
-import dashboardApi from "../../apis/dashboard.api";
-import { useDashboardStore } from '../../stores/dashboard';
+import { Line } from "vue-chartjs";
+// import { Chart, registerables } from "chart.js";
+import { useDashboardStore } from '@/stores/dashboard'; 
+import OverviewItem from "./OverviewItem.vue";
+import DataCustomerOrder from './DataCustomerOrder.vue';
 
 const dashboard = useDashboardStore();
-const { overiewLoading, overview } = dashboard;
 
-Chart.register(...registerables);
-
-// Set Global Chart.js configuration
-Chart.defaults.color = "#818d96";
-Chart.defaults.scale.grid.lineWidth = 0;
-Chart.defaults.scale.beginAtZero = true;
-Chart.defaults.datasets.bar.maxBarThickness = 45;
-Chart.defaults.elements.bar.borderRadius = 4;
-Chart.defaults.elements.bar.borderSkipped = false;
-Chart.defaults.elements.point.radius = 0;
-Chart.defaults.elements.point.hoverRadius = 0;
-Chart.defaults.plugins.tooltip.radius = 3;
-Chart.defaults.plugins.legend.labels.boxWidth = 10;
-
-onMounted(async () => {
-  dashboard.setOverviewLoading(true);
-
-  const result = await dashboardApi.getOverview();
-  
-  dashboard.setOverview(result.data);
-  dashboard.setOverviewLoading(false);
+onMounted(() => {
+  dashboard.fetchOverviewData();
+  dashboard.fetchCustomerOrderList();
 })
 
+// Chart.register(...registerables);
 
-
+// // Set Global Chart.js configuration
+// Chart.defaults.color = "#818d96";
+// Chart.defaults.scale.grid.lineWidth = 0;
+// Chart.defaults.scale.beginAtZero = true;
+// Chart.defaults.datasets.bar.maxBarThickness = 45;
+// Chart.defaults.elements.bar.borderRadius = 4;
+// Chart.defaults.elements.bar.borderSkipped = false;
+// Chart.defaults.elements.point.radius = 0;
+// Chart.defaults.elements.point.hoverRadius = 0;
+// Chart.defaults.plugins.tooltip.radius = 3;
+// Chart.defaults.plugins.legend.labels.boxWidth = 10;
 
 // Helper variables
 const orderSearch = ref(false);
@@ -377,137 +368,24 @@ const newCustomersOptions = reactive({
   <div class="content">
     <!-- Overview -->
     <div class="row items-push">
-      <div class="col-sm-6 col-xxl-3">
-        <!-- Pending Orders -->
-        <BaseBlock class="d-flex flex-column h-100 mb-0">
-          <template #content>
-            <div
-              class="block-content block-content-full flex-grow-1 d-flex justify-content-between align-items-center"
-            >
-              <dl class="mb-0">
-                <dt class="fs-3 fw-bold">{{ overview.totalOrder }}</dt>
-                <dd class="fs-sm fw-medium fs-sm fw-medium text-muted mb-0">
-                  Total Order
-                </dd>
-              </dl>
-              <div class="item item-rounded-lg bg-body-light">
-                <i class="far fa-gem fs-3 text-primary"></i>
-              </div>
-            </div>
-            <div class="bg-body-light rounded-bottom">
-              <a
-                class="block-content block-content-full block-content-sm fs-sm fw-medium d-flex align-items-center justify-content-between"
-                href="javascript:void(0)"
-              >
-                <span>View all orders</span>
-                <i
-                  class="fa fa-arrow-alt-circle-right ms-1 opacity-25 fs-base"
-                ></i>
-              </a>
-            </div>
-          </template>
-        </BaseBlock>
-        <!-- END Pending Orders -->
-      </div>
-      <div class="col-sm-6 col-xxl-3">
-        <!-- New Customers -->
-        <BaseBlock class="d-flex flex-column h-100 mb-0">
-          <template #content>
-            <div
-              class="block-content block-content-full flex-grow-1 d-flex justify-content-between align-items-center"
-            >
-              <dl class="mb-0">
-                <dt class="fs-3 fw-bold">124</dt>
-                <dd class="fs-sm fw-medium fs-sm fw-medium text-muted mb-0">
-                  New Customers
-                </dd>
-              </dl>
-              <div class="item item-rounded-lg bg-body-light">
-                <i class="far fa-user-circle fs-3 text-primary"></i>
-              </div>
-            </div>
-            <div class="bg-body-light rounded-bottom">
-              <a
-                class="block-content block-content-full block-content-sm fs-sm fw-medium d-flex align-items-center justify-content-between"
-                href="javascript:void(0)"
-              >
-                <span>View all customers</span>
-                <i
-                  class="fa fa-arrow-alt-circle-right ms-1 opacity-25 fs-base"
-                ></i>
-              </a>
-            </div>
-          </template>
-        </BaseBlock>
-        <!-- END New Customers -->
-      </div>
-      <div class="col-sm-6 col-xxl-3">
-        <!-- Messages -->
-        <BaseBlock class="d-flex flex-column h-100 mb-0">
-          <template #content>
-            <div
-              class="block-content block-content-full flex-grow-1 d-flex justify-content-between align-items-center"
-            >
-              <dl class="mb-0">
-                <dt class="fs-3 fw-bold">45</dt>
-                <dd class="fs-sm fw-medium fs-sm fw-medium text-muted mb-0">
-                  Messages
-                </dd>
-              </dl>
-              <div class="item item-rounded-lg bg-body-light">
-                <i class="far fa-paper-plane fs-3 text-primary"></i>
-              </div>
-            </div>
-            <div class="bg-body-light rounded-bottom">
-              <a
-                class="block-content block-content-full block-content-sm fs-sm fw-medium d-flex align-items-center justify-content-between"
-                href="javascript:void(0)"
-              >
-                <span>View all messages</span>
-                <i
-                  class="fa fa-arrow-alt-circle-right ms-1 opacity-25 fs-base"
-                ></i>
-              </a>
-            </div>
-          </template>
-        </BaseBlock>
-        <!-- END Messages -->
-      </div>
-      <div class="col-sm-6 col-xxl-3">
-        <!-- Conversion Rate -->
-        <BaseBlock class="d-flex flex-column h-100 mb-0">
-          <template #content>
-            <div
-              class="block-content block-content-full flex-grow-1 d-flex justify-content-between align-items-center"
-            >
-              <dl class="mb-0">
-                <dt class="fs-3 fw-bold">4.5%</dt>
-                <dd class="fs-sm fw-medium fs-sm fw-medium text-muted mb-0">
-                  Conversion Rate
-                </dd>
-              </dl>
-              <div class="item item-rounded-lg bg-body-light">
-                <i class="fa fa-chart-bar fs-3 text-primary"></i>
-              </div>
-            </div>
-            <div class="bg-body-light rounded-bottom">
-              <a
-                class="block-content block-content-full block-content-sm fs-sm fw-medium d-flex align-items-center justify-content-between"
-                href="javascript:void(0)"
-              >
-                <span>View statistics</span>
-                <i
-                  class="fa fa-arrow-alt-circle-right ms-1 opacity-25 fs-base"
-                ></i>
-              </a>
-            </div>
-          </template>
-        </BaseBlock>
-        <!-- END Conversion Rate-->
-      </div>
+      <OverviewItem 
+        title="Total Order"
+        :value="dashboard.overview.totalOrder"
+      />
+      <OverviewItem 
+        title="Order Completed"
+        :value="dashboard.overview.orderCompleted"
+      />
+      <OverviewItem 
+        title="Total Item Sales"
+        :value="dashboard.overview.orderItemSale"
+      />
+      <OverviewItem 
+        title="AVG Total Price"
+        :value="dashboard.overview.avgTotalPrice"
+      />
     </div>
     <!-- END Overview -->
-
     <!-- Statistics -->
     <div class="row">
       <div class="col-xl-8 col-xxl-9 d-flex flex-column">
@@ -521,16 +399,17 @@ const newCustomersOptions = reactive({
               <i class="si si-settings"></i>
             </button>
           </template>
-
+          <div>
+          </div>
           <template #content>
             <div
               class="block-content block-content-full flex-grow-1 d-flex items-center"
             >
-              <Bar
+              <!-- <Bar
                 :chart-data="earningsData"
                 :chart-options="earningsOptions"
                 class="w-100"
-              />
+              /> -->
             </div>
             <div class="block-content bg-body-light">
               <div class="row items-push text-center w-100">
@@ -602,11 +481,11 @@ const newCustomersOptions = reactive({
                   </div>
                 </div>
                 <div class="block-content p-1 text-center overflow-hidden">
-                  <Line
+                  <!-- <Line
                     :chart-data="totalOrdersData"
                     :chart-options="totalOrdersOptions"
                     style="height: 90px"
-                  />
+                  /> -->
                 </div>
               </template>
             </BaseBlock>
@@ -633,11 +512,11 @@ const newCustomersOptions = reactive({
                   </div>
                 </div>
                 <div class="block-content p-1 text-center overflow-hidden">
-                  <Line
+                  <!-- <Line
                     :chart-data="totalEarningsData"
                     :chart-options="totalEarningsOptions"
                     style="height: 90px"
-                  />
+                  /> -->
                 </div>
               </template>
             </BaseBlock>
@@ -665,11 +544,11 @@ const newCustomersOptions = reactive({
                 </div>
                 <div class="block-content p-1 text-center overflow-hidden">
                   <!-- New Customers Chart Container -->
-                  <Line
+                  <!-- <Line
                     :chart-data="newCustomersData"
                     :chart-options="newCustomersOptions"
                     style="height: 90px"
-                  />
+                  /> -->
                 </div>
               </template>
             </BaseBlock>
@@ -679,7 +558,7 @@ const newCustomersOptions = reactive({
       </div>
     </div>
     <!-- END Statistics -->
-
+    <DataCustomerOrder />
     <!-- Recent Orders -->
     <BaseBlock title="Recent Orders">
       <template #options>
@@ -1123,4 +1002,5 @@ const newCustomersOptions = reactive({
     <!-- END Recent Orders -->
   </div>
   <!-- END Page Content -->
+  
 </template>

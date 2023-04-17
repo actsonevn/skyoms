@@ -29,5 +29,6 @@ Route::middleware('auth:sanctum')->get('/user/detail/{id}', [AuthController::cla
 
 // Dashboard Controller
 Route::get('/overview', [DashboardController::class, 'getOverviewDashboard']);
+Route::get('/customer/orders', [DashboardController::class, 'getCustomerOrderList']);
 
 

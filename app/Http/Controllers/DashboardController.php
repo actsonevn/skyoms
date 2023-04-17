@@ -10,6 +10,7 @@ class DashboardController extends Controller
 {
     // variable using in scoped class
     private static $_CACHE_OVERVIEW = 'CACHE_OVERVIEW_KEY';
+    private static $_CACHE_ORDER_LIST = 'CACHE_CUSTOMER_ORDER_LIST_KEY';
 
     // [GET] Get data overview dashboard
     public function getOverviewDashboard() {
@@ -64,6 +65,46 @@ class DashboardController extends Controller
         return response()->json([
             'status' => 200,
             'data' => $data_reponse
+        ], 200);
+    }
+
+    // [GET] Get data customer order
+    public function getCustomerOrderList() { 
+        // handle buffer when exists.
+        if(Cache::has(self::$_CACHE_ORDER_LIST)) {
+            $data_cache = Cache::get(self::$_CACHE_ORDER_LIST);
+
+            return response()->json([
+                'status' => 200,
+                'data' => $data_cache,
+                'is_cache' => true
+            ], 200);
+        }
+
+        // get data customer order by query
+        $res_customer_order =  DB::table('post as p')
+        ->select('p.id as order_id','pm_sfn.meta_value as customer','p.post_status as status','oim_lt.meta_value as total_price','p.post_date as create_time',
+        DB::raw("GROUP_CONCAT(CONCAT(oi.order_item_name, '- (Qty: ', oim_qty.meta_value, ')') SEPARATOR ', ') AS list_order"))
+        ->join('postmeta as pm_sfn', 'p.id', '=', 'pm_sfn.post_id')
+        ->join('order_items as oi', 'oi.order_id', '=', 'p.id')
+        ->join('order_itemmeta as oim_qty', 'oi.order_item_id', '=', 'oim_qty.order_item_id')
+        ->join('order_itemmeta as oim_lt', 'oi.order_item_id', '=', 'oim_lt.order_item_id')
+        ->where([
+            ['pm_sfn.meta_key', '_shipping_first_name'],
+            ['oim_qty.meta_key', '_qty'],
+            ['oim_lt.meta_key', '_line_total'],
+            ['p.post_status', '!=', 'wc-cancelled'],
+            ['p.post_status', '!=', 'wc-trash'],
+            ['p.id', '!=', 'Null'],
+            ['oi.order_item_type', 'line_item'],
+        ])->groupBy('p.id')
+        ->get();
+
+        Cache::put(self::$_CACHE_ORDER_LIST, $res_customer_order, 30); // 30 seconds is time expried cache data
+
+        return response()->json([
+            'status' => 200,
+            'data' => $res_customer_order
         ], 200);
     }
 }
