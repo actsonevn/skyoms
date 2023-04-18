@@ -133,7 +133,7 @@ class DashboardController extends Controller
             foreach( $rel_query as $val) {
                 if($i == $val->hours)
                 {
-                    array_push( $hours, $val->hours ); 
+                    array_push( $hours, $val->hours.'h' ); 
                     array_push( $data, $val->total_price ); 
                     $isNull = true;
                     break;
@@ -142,7 +142,7 @@ class DashboardController extends Controller
 
             if(!$isNull)
             {
-                array_push( $hours, $i ); 
+                array_push( $hours, $i.'h' ); 
                 array_push( $data, 0 ); 
             }
         }
