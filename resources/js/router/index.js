@@ -249,6 +249,9 @@ const Error404 = () => import("@/views/errors/404View.vue");
 const Error500 = () => import("@/views/errors/500View.vue");
 const Error503 = () => import("@/views/errors/503View.vue");
 
+// Test High Chart
+const TestHighChart = () => import("@/views/TestHighChart.vue");
+
 // Set all routes
 const routes = [
   /*
@@ -269,7 +272,10 @@ const routes = [
       },
     ],
   },
-
+  {
+    path: "/test-high-chart",
+    component: TestHighChart,
+  },
   /*
   |
   |--------------------------------------------------------------------------

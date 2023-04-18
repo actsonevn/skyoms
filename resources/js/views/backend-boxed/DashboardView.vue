@@ -2,7 +2,7 @@
 import { reactive } from "vue";
 
 // vue-chartjs, for more info and examples you can check out https://vue-chartjs.org/ and http://www.chartjs.org/docs/ -->
-import { Line } from "vue-chartjs";
+// import { Line } from "vue-chartjs";
 import { Chart, registerables } from "chart.js";
 
 Chart.register(...registerables);
@@ -204,11 +204,11 @@ const salesOptions = reactive({
           <template #content>
             <div class="block-content p-0 text-center">
               <div class="pt-3">
-                <Line
+                <!-- <Line
                   :chart-data="earningsData"
                   :chart-options="earningsOptions"
                   style="height: 350px"
-                />
+                /> -->
               </div>
             </div>
             <div class="block-content">
@@ -245,11 +245,11 @@ const salesOptions = reactive({
           <template #content>
             <div class="block-content p-0 text-center">
               <div class="pt-3">
-                <Line
+                <!-- <Line
                   :chart-data="salesData"
                   :chart-options="salesOptions"
                   style="height: 350px"
-                />
+                /> -->
               </div>
             </div>
             <div class="block-content">

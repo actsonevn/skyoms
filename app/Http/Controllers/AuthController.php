@@ -40,7 +40,6 @@ class AuthController extends Controller
 
     // [POST] create user account
     public function signUp(Request $request) {
-        
         $findUser = User::where('email', $request->email);
 
         if($findUser->count() > 0)

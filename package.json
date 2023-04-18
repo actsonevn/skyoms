@@ -46,7 +46,6 @@
         "simplebar": "^5.3.9",
         "sweetalert2": "^11.6.15",
         "vue": "^3.2.37",
-        "vue-chartjs": "^4.1.2",
         "vue-cropperjs": "^5.0.0",
         "vue-dataset": "^3.4.9",
         "vue-easy-lightbox": "^1.11.0",

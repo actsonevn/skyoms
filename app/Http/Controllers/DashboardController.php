@@ -107,4 +107,51 @@ class DashboardController extends Controller
             'data' => $res_customer_order
         ], 200);
     }
+
+    // [GET] Get order by hours
+    public function getOrderByHours() { 
+        // get data customer order by query
+        $res_order_by_hours = DB::table('post as p')
+        ->select(DB::raw('SUM(pm_ot.meta_value - pm_os.meta_value) AS total_price'), DB::raw('HOUR(p.post_date) AS hours'))
+        ->join('postmeta as pm_ot', 'p.id', '=', 'pm_ot.post_id')
+        ->join('postmeta as pm_os', 'p.id', '=', 'pm_os.post_id')
+        ->where([
+            ['p.post_type', 'shop_order'],
+            ['p.post_status', '!=' ,'wc-cancelled'],
+            ['p.post_status', '!=' ,'wc-trash'],
+            ['pm_ot.meta_key', '_order_total'],
+            ['pm_os.meta_key', '_order_shipping'],
+        ])->groupBy(DB::raw('HOUR(p.post_date)'))
+        ->get();
+
+        $hours = [];
+        $data = [];
+
+        $rel_query = $res_order_by_hours->toArray();
+        for($i = 0; $i <= 23; $i++) {
+            $isNull = false;
+            foreach( $rel_query as $val) {
+                if($i == $val->hours)
+                {
+                    array_push( $hours, $val->hours ); 
+                    array_push( $data, $val->total_price ); 
+                    $isNull = true;
+                    break;
+                }
+            }
+
+            if(!$isNull)
+            {
+                array_push( $hours, $i ); 
+                array_push( $data, 0 ); 
+            }
+        }
+
+
+        return response()->json([
+            'status' => 200,
+            'hours' =>  $hours,
+            'data' => $data,
+        ], 200);
+    }
 }

@@ -2,7 +2,7 @@
 import { reactive } from "vue";
 
 // vue-chartjs, for more info and examples you can check out https://vue-chartjs.org/ and http://www.chartjs.org/docs/ -->
-import { Line, Bar, Radar, PolarArea, Pie, Doughnut } from "vue-chartjs";
+// import { Line, Bar, Radar, PolarArea, Pie, Doughnut } from "vue-chartjs";
 import { Chart, registerables } from "chart.js";
 
 Chart.register(...registerables);
@@ -95,10 +95,10 @@ const chartPolarPieDonutData = reactive({
         <!-- Lines Chart -->
         <BaseBlock title="Lines" content-full content-class="text-center">
           <div class="py-3">
-            <Line
+            <!-- <Line
               :chart-data="chartLinesBarsRadarData"
               :chart-options="{ tension: 0.4, maintainAspectRatio: false }"
-            />
+            /> -->
           </div>
         </BaseBlock>
         <!-- END Lines Chart -->
@@ -107,10 +107,10 @@ const chartPolarPieDonutData = reactive({
         <!-- Bars Chart -->
         <BaseBlock title="Bars" content-full content-class="text-center">
           <div class="py-3">
-            <Bar
+            <!-- <Bar
               :chart-data="chartLinesBarsRadarData"
               :chart-options="{ maintainAspectRatio: false }"
-            />
+            /> -->
           </div>
         </BaseBlock>
         <!-- END Bars Chart -->
@@ -119,7 +119,7 @@ const chartPolarPieDonutData = reactive({
         <!-- Radar Chart -->
         <BaseBlock title="Radar" content-full content-class="text-center">
           <div class="py-3 px-xxl-7">
-            <Radar :chart-data="chartLinesBarsRadarData" />
+            <!-- <Radar :chart-data="chartLinesBarsRadarData" /> -->
           </div>
         </BaseBlock>
         <!-- END Radar Chart -->
@@ -128,7 +128,7 @@ const chartPolarPieDonutData = reactive({
         <!-- Polar Area Chart -->
         <BaseBlock title="Polar Area" content-full content-class="text-center">
           <div class="py-3 px-xxl-7">
-            <PolarArea :chart-data="chartPolarPieDonutData" />
+            <!-- <PolarArea :chart-data="chartPolarPieDonutData" /> -->
           </div>
         </BaseBlock>
         <!-- END Polar Area Chart -->
@@ -137,7 +137,7 @@ const chartPolarPieDonutData = reactive({
         <!-- Pie Chart -->
         <BaseBlock title="Pie" content-full content-class="text-center">
           <div class="py-3 px-xxl-7">
-            <Pie :chart-data="chartPolarPieDonutData" />
+            <!-- <Pie :chart-data="chartPolarPieDonutData" /> -->
           </div>
         </BaseBlock>
         <!-- END Pie Chart -->
@@ -146,7 +146,7 @@ const chartPolarPieDonutData = reactive({
         <!-- Donut Chart -->
         <BaseBlock title="Donut" content-full content-class="text-center">
           <div class="py-3 px-xxl-7">
-            <Doughnut :chart-data="chartPolarPieDonutData" />
+            <!-- <Doughnut :chart-data="chartPolarPieDonutData" /> -->
           </div>
         </BaseBlock>
         <!-- END Donut Chart -->

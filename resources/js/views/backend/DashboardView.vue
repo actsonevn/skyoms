@@ -1,11 +1,12 @@
 <script setup>
 import { onMounted, reactive, ref } from "vue";
 // vue-chartjs, for more info and examples you can check out https://vue-chartjs.org/ and http://www.chartjs.org/docs/ -->
-import { Line } from "vue-chartjs";
+// import { Line } from "vue-chartjs";
 // import { Chart, registerables } from "chart.js";
 import { useDashboardStore } from '@/stores/dashboard'; 
 import OverviewItem from "./OverviewItem.vue";
 import DataCustomerOrder from './DataCustomerOrder.vue';
+import HighChartView from "./HighChartView.vue";
 
 const dashboard = useDashboardStore();
 
@@ -386,6 +387,13 @@ const newCustomersOptions = reactive({
       />
     </div>
     <!-- END Overview -->
+    <BaseBlock
+      title="Earnings Summary"
+      class="flex-grow-1 d-flex flex-column"
+    >
+      <HighChartView />
+    </BaseBlock>
+    
     <!-- Statistics -->
     <div class="row">
       <div class="col-xl-8 col-xxl-9 d-flex flex-column">
