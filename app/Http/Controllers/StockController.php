@@ -36,16 +36,51 @@ class StockController extends Controller
 
     // [GET] get stock list
     public function getStockList(Request $request) {
-        $page = !$request->page || $request->page == 1 ? 0 : $request->page - 1; // page default is 0
-        $page_size = $request->page_size && $request->page_size < 500 ? $request->page_size : 2; // page size default is 10
+        $page = !$request->input('page') || $request->input('page') == 1 ? 0 : $request->input('page') - 1; // page default is 0
+        $page_size = $request->input('page_size') && $request->input('page_size') < 20 ? $request->input('page_size') : 20; // page size default is 10
 
         $offset = $page_size * ($page +  1) - $page_size;
         $limit = $page_size;
 
+        $sort = $request->input('sort');
+        $sortType = $request->input('sort_type');
+
+        $sortString = ($sort ? $sort : 'product_id').' '.($sortType ? $sortType : 'ASC');
+
+        $brandName = $request->input('brand_name');
+        $productName = $request->input('product_name');
+        $minStock = $request->input('min_stock');
+        $maxStock = $request->input('max_stock');
+
+        $arrayCondition = [];
+        if($brandName) {
+            array_push($arrayCondition, ['brand_name', $brandName]);
+        }
+
+        if($productName) {
+            array_push($arrayCondition, ['product_name', '=', '%'.$productName.'%']);
+        }
+
+        if(($minStock || $minStock == 0) && $maxStock) {
+            array_push($arrayCondition, ['stock_total', '>=' , $minStock]);
+            array_push($arrayCondition, ['stock_total', '<=' , $maxStock]);
+        }
+
         // skip: is the starting position to get data in the table
         // take: is the number of rows of data retrieved
-        $stocks = DB::table('stock_divide')->groupBy('product_id')->skip($offset)->take($limit)->get();
-        $countStock = DB::table('stock_divide')->groupBy('product_id')->get();
+        $stocks = DB::table('stock_divide')
+        ->where('parent_product_id', null)
+        ->where($arrayCondition)
+        ->groupBy('product_id')
+        ->orderByRaw($sortString)
+        ->skip($offset)->take($limit)
+        ->get();
+
+        $countStock = DB::table('stock_divide')
+        ->where('parent_product_id', null)
+        ->where($arrayCondition)
+        ->groupBy('product_id')
+        ->get();
 
         $arrayData = [];
 
@@ -54,6 +89,7 @@ class StockController extends Controller
             # stock single
             if($stock->type == 0) {
                 array_push($arrayData, [
+                    "id" => $stock->id,
                     "productId" => $stock->product_id,
                     "productName" => $stock->product_name,
                     "sku" => $stock->main_sku,
@@ -70,7 +106,7 @@ class StockController extends Controller
             # stock avairation
             if($stock->type == 1 && $stock->parent_product_id == null) {
                 $findStockByProductId = DB::table('stock_divide')
-                ->where('product_id', $stock->product_id)
+                ->where('parent_product_id', $stock->product_id)
                 ->where('parent_product_id', '!=', null)
                 ->get();
 
@@ -81,6 +117,7 @@ class StockController extends Controller
                     foreach($findStockByProductId->toArray() as $findStock) { 
                         if($findStock->parent_product_id == $stock->product_id) {
                             array_push($subStockList, [
+                                "id" => $findStock->id,
                                 "productId" => $findStock->product_id,
                                 "subName" => $findStock->sub_name,
                                 "subSku" => $findStock->sku,
@@ -94,6 +131,7 @@ class StockController extends Controller
                
 
                 array_push($arrayData, [
+                    "id" => $stock->id,
                     "productId" => $stock->product_id,
                     "productName" => $stock->product_name,
                     "sku" => $stock->main_sku,

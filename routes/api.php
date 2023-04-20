@@ -38,4 +38,3 @@ Route::middleware('auth:sanctum')->get('/customer/orders/hours', [DashboardContr
 Route::post('/stock/create', [StockController::class, 'createNewStockDevide']);
 Route::get('/stock/list', [StockController::class, 'getStockList']);
 
-
