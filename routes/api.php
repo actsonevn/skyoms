@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\StockController;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -28,8 +30,12 @@ Route::middleware('auth:sanctum')->get('/user/detail/{id}', [AuthController::cla
 // Route::get('/user/detail/{id}', [AuthController::class, 'detailUser']);
 
 // Dashboard Controller
-Route::get('/overview', [DashboardController::class, 'getOverviewDashboard']);
-Route::get('/customer/orders', [DashboardController::class, 'getCustomerOrderList']);
-Route::get('/customer/orders/hours', [DashboardController::class, 'getOrderByHours']);
+Route::middleware('auth:sanctum')->get('/overview', [DashboardController::class, 'getOverviewDashboard']);
+Route::middleware('auth:sanctum')->get('/customer/orders', [DashboardController::class, 'getCustomerOrderList']);
+Route::middleware('auth:sanctum')->get('/customer/orders/hours', [DashboardController::class, 'getOrderByHours']);
+
+
+Route::post('/stock/create', [StockController::class, 'createNewStockDevide']);
+Route::get('/stock/list', [StockController::class, 'getStockList']);
 
 
