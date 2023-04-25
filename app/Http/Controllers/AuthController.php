@@ -59,7 +59,8 @@ class AuthController extends Controller
         if($createUser) {
             return response()->json([
                 'status' => 200,
-                'message' => 'Sign-up successfully.'
+                'message' => 'Sign-up successfully.',
+                'user' => $createUser
             ], 200);
         } else {
             return response()->json([
@@ -85,4 +86,6 @@ class AuthController extends Controller
             ], 400);
         }
     }
+
+    
 }

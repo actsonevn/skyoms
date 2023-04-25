@@ -11,6 +11,7 @@ class DashboardController extends Controller
     // variable using in scoped class
     private static $_CACHE_OVERVIEW = 'CACHE_OVERVIEW_KEY';
     private static $_CACHE_ORDER_LIST = 'CACHE_CUSTOMER_ORDER_LIST_KEY';
+    private static $_CACHE_TOTAL_USER = 'CACHE_TOTAL_USER_KEY';
 
     // [GET] Get data overview dashboard
     public function getOverviewDashboard() {
@@ -152,6 +153,84 @@ class DashboardController extends Controller
             'status' => 200,
             'hours' =>  $hours,
             'data' => $data,
+        ], 200);
+    }
+
+    // [GET] get info customer 
+    public function getCustomerInfo(Request $request) { 
+        $page = !$request->input('page') || $request->input('page') == 1 ? 0 : $request->input('page') - 1; // page default is 0
+        $page_size = $request->input('page_size') && $request->input('page_size') < 20 ? $request->input('page_size') : 20; // page size default is 20
+
+        $offset = $page_size * ($page +  1) - $page_size;
+        $limit = $page_size;
+
+        $totalItem = 0;
+        if(Cache::has(self::$_CACHE_TOTAL_USER)) {
+            $totalItem = Cache::get(self::$_CACHE_TOTAL_USER);
+        } else {
+            $totalItem = DB::select("SELECT COUNT(count_user.user_id) AS total_user
+                FROM (SELECT _order.user_id
+                FROM (SELECT 
+                CASE WHEN a_pm.meta_key = '_customer_user' THEN a_pm.meta_value END AS user_id,
+                a_p.id
+                FROM aowp_posts AS a_p
+                JOIN aowp_postmeta AS a_pm ON a_pm.post_id = a_p.id
+                WHERE a_p.post_type = 'shop_order' AND a_p.post_date BETWEEN '2023-04-01' AND '2023-04-24' 
+                GROUP BY a_p.id) AS _order
+                GROUP BY _order.user_id) AS count_user");
+
+            Cache::put(self::$_CACHE_TOTAL_USER, $totalItem, 10);
+        }
+
+        $customerOrder = DB::select("SELECT COUNT(_order.id) AS total_order, _order.user_id
+        FROM (SELECT 
+        CASE WHEN a_pm.meta_key = '_customer_user' THEN a_pm.meta_value END AS user_id,
+        a_p.id
+        FROM aowp_posts AS a_p
+        JOIN aowp_postmeta AS a_pm ON a_pm.post_id = a_p.id
+        WHERE a_p.post_type = 'shop_order' AND a_p.post_date BETWEEN '2023-04-01' AND '2023-04-24' 
+        GROUP BY a_p.id) AS _order
+        GROUP BY _order.user_id
+        LIMIT ? OFFSET ?", [ $limit, $offset ]);
+
+        $arrUserId = [];
+
+        foreach($customerOrder as $customer) { 
+            array_push($arrUserId, $customer->user_id);
+        }
+
+        $query = DB::table('aowp_usermeta as a_um')
+        ->select('a_um.user_id', 
+        DB::raw("CONCAT(MAX(CASE WHEN a_um.meta_key = 'first_name' THEN a_um.meta_value END), ' ', MAX(CASE WHEN a_um.meta_key = 'last_name' THEN a_um.meta_value END)) AS full_name"),
+        DB::raw("MAX(CASE WHEN a_um.meta_key = 'billing_address_1' THEN a_um.meta_value END) AS address"),
+        DB::raw("MAX(CASE WHEN a_um.meta_key = 'billing_phone' THEN a_um.meta_value END) AS phone_number"),
+        DB::raw("MAX(CASE WHEN a_um.meta_key = 'billing_city' THEN a_um.meta_value END) AS city"),
+        )->whereIn('a_um.user_id', $arrUserId)
+        ->groupBy('a_um.user_id')
+        ->get();
+
+        $result = [];
+        foreach($query as $data) {
+            foreach($customerOrder as $customer) { 
+                if($customer->user_id == $data->user_id) {
+                    $obj = [
+                        'userId' => $data->user_id,
+                        'totalOrder' => $customer->total_order,
+                        'fullname' => $data->full_name,
+                        'address' => $data->address,
+                        'phoneNumber' => $data->phone_number,
+                        'city' => $data->city,
+                    ];
+                    array_push($result, $obj);
+                    break;
+                }
+            }
+        }
+
+        return response()->json([
+            'status' => 200,
+            'data' => $result,
+            'totalPage' => ceil($totalItem[0]->total_user / $limit),
         ], 200);
     }
 }

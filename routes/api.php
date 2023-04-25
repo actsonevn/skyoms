@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\MessageController;
 use App\Http\Controllers\StockController;
 
 use Illuminate\Http\Request;
@@ -26,6 +27,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::post('/auth/login', [AuthController::class, 'login']);
 Route::post('/auth/sign-up', [AuthController::class, 'signUp']);
 
+
 Route::middleware('auth:sanctum')->get('/user/detail/{id}', [AuthController::class, 'detailUser']);
 // Route::get('/user/detail/{id}', [AuthController::class, 'detailUser']);
 
@@ -34,7 +36,12 @@ Route::middleware('auth:sanctum')->get('/overview', [DashboardController::class,
 Route::middleware('auth:sanctum')->get('/customer/orders', [DashboardController::class, 'getCustomerOrderList']);
 Route::middleware('auth:sanctum')->get('/customer/orders/hours', [DashboardController::class, 'getOrderByHours']);
 
+Route::get('/customer/info', [DashboardController::class, 'getCustomerInfo']);
 
 Route::post('/stock/create', [StockController::class, 'createNewStockDevide']);
 Route::get('/stock/list', [StockController::class, 'getStockList']);
+
+
+Route::get('/socket/send', [MessageController::class, 'send']);
+Route::get('/send-message', [MessageController::class, 'sendMessage']);
 
